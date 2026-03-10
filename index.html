@@ -1,186 +1,24 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Visualizador 3D de Array</title>
-
-<style>
-
-body{
-    margin:0;
-    font-family: Arial;
-    background:#111;
-    color:white;
-    text-align:center;
-}
-
-#panel{
-    position:absolute;
-    top:20px;
-    left:20px;
-    background:rgba(0,0,0,0.7);
-    padding:15px;
-    border-radius:10px;
-}
-
-input{
-    padding:6px;
-    font-size:16px;
-}
-
-button{
-    padding:6px 12px;
-    margin:5px;
-    cursor:pointer;
-}
-
-#canvas3d{
-    width:100vw;
-    height:100vh;
-}
-
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visualizador Dinámico de Arrays</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+  <div class="contenedor">
+    <h1>Visualizador de Arrays</h1>
+    
+    <div class="controles">
+      <input type="text" id="inputValor" placeholder="Ingresa un valor (ej. 42, Hola)">
+      <button id="btnPush">Agregar (Push)</button>
+      <button id="btnPop">Eliminar último (Pop)</button>
+    </div>
 
-<div id="panel">
+    <div id="contenedorArray" class="contenedor-array"></div>
+  </div>
 
-<h2>Array 3D</h2>
-
-<input type="number" id="valor" placeholder="valor">
-
-<button onclick="agregarValor()">Agregar</button>
-<button onclick="eliminarValor()">Eliminar último</button>
-<button onclick="limpiarArray()">Limpiar</button>
-
-<p id="arrayTexto"></p>
-
-</div>
-
-<div id="canvas3d"></div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
-<script>
-
-let scene, camera, renderer;
-let barras = [];
-let array = [];
-
-init();
-animate();
-
-function init(){
-
-scene = new THREE.Scene();
-
-camera = new THREE.PerspectiveCamera(
-75,
-window.innerWidth/window.innerHeight,
-0.1,
-1000
-);
-
-camera.position.set(10,10,20);
-camera.lookAt(0,0,0);
-
-renderer = new THREE.WebGLRenderer({antialias:true});
-renderer.setSize(window.innerWidth,window.innerHeight);
-
-document.getElementById("canvas3d").appendChild(renderer.domElement);
-
-/* LUZ */
-
-const light = new THREE.DirectionalLight(0xffffff,1);
-light.position.set(10,20,10);
-scene.add(light);
-
-/* EJES XYZ */
-
-const axes = new THREE.AxesHelper(20);
-scene.add(axes);
-
-}
-
-/* ANIMACION */
-
-function animate(){
-
-requestAnimationFrame(animate);
-renderer.render(scene,camera);
-
-}
-
-/* ACTUALIZAR ARRAY */
-
-function agregarValor(){
-
-let valor = document.getElementById("valor").value;
-
-if(valor==="") return;
-
-array.push(Number(valor));
-
-document.getElementById("valor").value="";
-
-dibujarArray();
-
-}
-
-/* ELIMINAR */
-
-function eliminarValor(){
-
-array.pop();
-dibujarArray();
-
-}
-
-/* LIMPIAR */
-
-function limpiarArray(){
-
-array=[];
-dibujarArray();
-
-}
-
-/* DIBUJAR VECTOR */
-
-function dibujarArray(){
-
-barras.forEach(b => scene.remove(b));
-barras=[];
-
-for(let i=0;i<array.length;i++){
-
-let valor = array[i];
-
-const geometry = new THREE.BoxGeometry(0.8,valor,0.8);
-
-const material = new THREE.MeshPhongMaterial({
-color:0x00ffcc
-});
-
-const barra = new THREE.Mesh(geometry,material);
-
-barra.position.x = i*2;
-barra.position.y = valor/2;
-barra.position.z = 0;
-
-scene.add(barra);
-
-barras.push(barra);
-
-}
-
-document.getElementById("arrayTexto").innerText =
-"Array: ["+array.join(", ")+"]";
-
-}
-
-</script>
-
+  <script src="script.js"></script>
 </body>
 </html>
