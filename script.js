@@ -1,62 +1,95 @@
-// Referencias a los elementos del DOM
-const inputValor = document.getElementById('inputValor');
+const inputX = document.getElementById('inputX');
+const inputY = document.getElementById('inputY');
+const inputZ = document.getElementById('inputZ');
 const btnPush = document.getElementById('btnPush');
 const btnPop = document.getElementById('btnPop');
-const contenedorArray = document.getElementById('contenedorArray');
+const contenedorMatriz = document.getElementById('contenedorMatriz');
 
-// Este es el array lógico que manejaremos
-let miArreglo = [];
+// Esta es nuestra matriz: un array que contendrá otros arrays
+let miMatriz = [];
 
-// Función para dibujar el array en la pantalla
-function renderizarArray() {
-  // Limpiamos el contenedor visual antes de volver a dibujar
-  contenedorArray.innerHTML = '';
+function actualizarVisualizacion() {
+  renderizarMatrizDOM();
+  graficarMatriz3D();
+}
 
-  // Recorremos el array lógico y creamos un elemento visual por cada ítem
-  miArreglo.forEach((valor, indice) => {
-    // Crear la caja principal
-    const divElemento = document.createElement('div');
-    divElemento.classList.add('elemento-array');
-    divElemento.textContent = valor;
+function renderizarMatrizDOM() {
+  contenedorMatriz.innerHTML = '';
+  
+  // Recorremos cada fila de la matriz
+  miMatriz.forEach((fila) => {
+    const divFila = document.createElement('div');
+    divFila.classList.add('fila-matriz');
 
-    // Crear la etiqueta del índice
-    const spanIndice = document.createElement('span');
-    spanIndice.classList.add('indice-array');
-    spanIndice.textContent = `[${indice}]`;
+    // Recorremos cada número dentro de la fila (las columnas)
+    fila.forEach((valor) => {
+      const divCelda = document.createElement('div');
+      divCelda.classList.add('celda-matriz');
+      divCelda.textContent = valor;
+      divFila.appendChild(divCelda);
+    });
 
-    // Ensamblar
-    divElemento.appendChild(spanIndice);
-    contenedorArray.appendChild(divElemento);
+    contenedorMatriz.appendChild(divFila);
   });
 }
 
-// Evento para agregar (Push)
+function graficarMatriz3D() {
+  // Preparamos los datos para Plotly
+  // Mapeamos cada fila de nuestra matriz a un "trazo" (una línea) en el gráfico
+  let trazos = miMatriz.map((fila, indice) => {
+    return {
+      type: 'scatter3d',
+      mode: 'lines+markers',
+      // Dibujamos una línea desde el origen [0,0,0] hasta el punto [x,y,z] de la fila
+      x: [0, fila[0]], 
+      y: [0, fila[1]], 
+      z: [0, fila[2]],
+      marker: { size: 5 },
+      line: { width: 5 },
+      name: `Fila ${indice}`
+    };
+  });
+
+  let configuracion = {
+    title: 'Vectores de la Matriz en ℝ³',
+    scene: {
+      xaxis: { title: 'Eje X', range: [-10, 10] },
+      yaxis: { title: 'Eje Y', range: [-10, 10] },
+      zaxis: { title: 'Eje Z', range: [-10, 10] }
+    },
+    margin: { l: 0, r: 0, b: 0, t: 40 }
+  };
+
+  Plotly.newPlot('grafico3d', trazos, configuracion);
+}
+
+// Evento para agregar una nueva fila a la matriz
 btnPush.addEventListener('click', () => {
-  const valor = inputValor.value.trim();
-  
-  if (valor !== '') {
-    miArreglo.push(valor); // Lógica: agregar al final del array
-    inputValor.value = ''; // Limpiar input
-    inputValor.focus();
-    renderizarArray();     // Actualizar interfaz
-  } else {
-    alert('Por favor, ingresa un valor válido.');
-  }
+  let valX = inputX.value !== '' ? parseFloat(inputX.value) : 0;
+  let valY = inputY.value !== '' ? parseFloat(inputY.value) : 0;
+  let valZ = inputZ.value !== '' ? parseFloat(inputZ.value) : 0;
+
+  // Creamos el array de la fila y lo empujamos a la matriz principal
+  let nuevaFila = [valX, valY, valZ];
+  miMatriz.push(nuevaFila);
+
+  // Limpiamos los inputs
+  inputX.value = '';
+  inputY.value = '';
+  inputZ.value = '';
+
+  actualizarVisualizacion();
 });
 
-// Evento para eliminar (Pop)
+// Evento para eliminar la última fila de la matriz
 btnPop.addEventListener('click', () => {
-  if (miArreglo.length > 0) {
-    miArreglo.pop(); // Lógica: eliminar el último elemento
-    renderizarArray(); // Actualizar interfaz
+  if (miMatriz.length > 0) {
+    miMatriz.pop();
+    actualizarVisualizacion();
   } else {
-    alert('El array ya está vacío.');
+    alert('La matriz ya está vacía.');
   }
 });
 
-// Permitir agregar presionando la tecla Enter
-inputValor.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') {
-    btnPush.click();
-  }
-});
+// Dibujar el escenario vacío al cargar la página
+actualizarVisualizacion();

@@ -2,21 +2,29 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Visualizador Dinámico de Arrays</title>
+  <title>Visualizador de Matrices en 3D</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
 </head>
 <body>
   <div class="contenedor">
-    <h1>Visualizador de Arrays</h1>
+    <h1>Visualizador de Matrices</h1>
+    <p>Ingresa los componentes (X, Y, Z) para agregar una nueva fila a la matriz.</p>
     
     <div class="controles">
-      <input type="text" id="inputValor" placeholder="Ingresa un valor (ej. 42, Hola)">
-      <button id="btnPush">Agregar (Push)</button>
-      <button id="btnPop">Eliminar último (Pop)</button>
+      <input type="number" id="inputX" placeholder="Eje X">
+      <input type="number" id="inputY" placeholder="Eje Y">
+      <input type="number" id="inputZ" placeholder="Eje Z">
+      <button id="btnPush">Agregar Fila (Push)</button>
+      <button id="btnPop">Eliminar Fila (Pop)</button>
     </div>
 
-    <div id="contenedorArray" class="contenedor-array"></div>
+    <div class="info-matriz">
+      <h3>Estado de la Matriz en Memoria:</h3>
+      <div id="contenedorMatriz" class="contenedor-matriz"></div>
+    </div>
+
+    <div id="grafico3d" style="width:100%; height:500px;"></div>
   </div>
 
   <script src="script.js"></script>
